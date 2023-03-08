@@ -1,35 +1,29 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
-function UserList() {
+function UsersList() {
   const [users, setUsers] = useState([]);
-  fetch('https://jsonplaceholder.typicode.com/users')
-    .then(response => response.json())
-    .then(data => setUsers(data));
 
-  function handleAlbumClick(userId) {
-    const url = `https://jsonplaceholder.typicode.com/albums?userId=${userId}`;
-  }
+      useEffect(() => {
+      fetch(`https://jsonplaceholder.typicode.com/users`)
+        .then(response => response.json())
+        .then(data => setUsers(data));
+    }, []);
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Ім'я</th>
-          <th>Електронна пошта</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
+    <div>
+      <h1>Список користувачів</h1>
+      <ul  >
         {users.map(user => (
-          <tr key={user.id}>
-            <td>{user.name}</td>
-            <td>{user.email}</td>
-            <td><button onClick={() => handleAlbumClick(user.id)}>Album</button></td>
-          </tr>
+          <li key={user.id}>
+            {user.name} 
+<br/>
+            <Link to={`/albums?userId=${user.id}`} style={{textDecoration: "none"}} > Albums</Link>
+          </li>
         ))}
-      </tbody>
-    </table>
+      </ul>
+    </div>
   );
 }
 
-export default UserList;
+export default UsersList;

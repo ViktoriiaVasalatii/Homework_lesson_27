@@ -1,37 +1,34 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 
-function AlbumList({ userId, onClose }) {
+function AlbumsList() {
     const [albums, setAlbums] = useState([]);
-    const url = `https://jsonplaceholder.typicode.com/albums?userId=${userId}`;
-    fetch(url)
-        .then(response => response.json())
-        .then(data => setAlbums(data));
+    const location = useLocation();
 
-    function handlePhotosClick(albumId) {
-        const url = 'https://jsonplaceholder.typicode.com/photos?albumId=${albumId}';
-    }
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const userId = searchParams.get('userId');
+
+        fetch(`https://jsonplaceholder.typicode.com/albums?userId=${userId}`)
+            .then(response => response.json())
+            .then(data => setAlbums(data))
+            .catch(error => console.error(error));
+    }, [location]);
 
     return (
         <div>
-            <button onClick={onClose}>Закрити</button>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Назва альбому</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {albums.map(album => (
-                        <tr key={album.id}>
-                            <td>{album.title}</td>
-                            <td><button onClick={() => handlePhotosClick(album.id)}>Photos</button></td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <h1>Список альбомів користувача </h1>
+            <ul>
+                {albums.map(album => (
+                    <li key={album.id}>
+                        {album.title}
+                        <br/>
+                        <Link to={`/photos?albumId=${album.id}`} style={{textDecoration: "none"}} > Photos</Link>
+        
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 }
-
-export default AlbumList;
+export default AlbumsList;

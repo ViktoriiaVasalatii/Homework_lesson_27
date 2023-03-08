@@ -1,21 +1,35 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
-function PhotoList({ albumId, onClose }) {
-    const [photos, setPhotos] = useState([]);
-    const url = 'https://jsonplaceholder.typicode.com/photos?albumId=${albumId}';
-    fetch(url)
-        .then(response => response.json())
-        .then(data => setPhotos(data));
+function PhotosList() {
+  const [photos, setPhotos] = useState([]);
+  const location = useLocation();
 
-    return (
-        <div>
-            <button onClick={onClose}>Закрити</button>
-            {photos.map(photo => (
-                <img key={photo.id} src={photo.url} alt={photo.title} />
-            ))}
-        </div>
-    );
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const albumId = searchParams.get('albumId');
+    
+    fetch(`https://jsonplaceholder.typicode.com/photos?albumId=${albumId}`)
+      .then(response => response.json())
+      .then(data => setPhotos(data))
+      .catch(error => console.error(error));
+  }, [location]);
+
+  return (
+    <div>
+      <h1>Фотографії з альбому</h1>
+      <ul>
+        {photos.map(photo => (
+          <li key={photo.id}>
+            <img src={photo.thumbnailUrl} alt={photo.title} />
+            <p>{photo.title}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
+export default PhotosList;
 
-export default PhotoList;
+
